@@ -1,0 +1,46 @@
+<!-- admin_view.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2 class="mb-4">Wallpaper Admin</h2>
+    <a href="{% url 'add_wallpaper' %}" class="btn btn-success mb-3">Add Wallpaper</a>
+    <a href="{% url 'add_category' %}" class="btn btn-primary mb-3">Add Category</a>
+
+    <table class="table table-bordered">
+      <thead class="thead-dark">
+        <tr>
+          <th>Title</th>
+          <th>Resolution (Width)</th>
+          <th>Resolution (Height)</th>
+          <th>File Size</th>
+          <th>Uploaded By</th>
+          <th>Uploaded At</th>
+          <th>Categories</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for wallpaper in wallpapers %}
+          <tr>
+            <td>{{ wallpaper.title }}</td>
+            <td>{{ wallpaper.resolution_width }}</td>
+            <td>{{ wallpaper.resolution_height }}</td>
+            <td>{{ wallpaper.file_size }}</td>
+            <td>{{ wallpaper.uploaded_by.username }}</td>
+            <td>{{ wallpaper.uploaded_at }}</td>
+            <td>
+              Categories: {% for category in wallpaper.categories.all %}{{ category.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+            </td>
+
+            <td class="d-flex justify-content-between">
+              <a href="{% url 'edit_wallpaper' wallpaper.id %}" class="btn btn-warning btn-sm">Edit</a>
+              <a href="{% url 'delete_wallpaper' wallpaper.id %}" class="btn btn-danger btn-sm ml-2">Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock content %}

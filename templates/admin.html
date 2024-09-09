@@ -1,0 +1,142 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Wallpaper Store</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Additional CSS for custom styles -->
+    <link rel="stylesheet" href="{% static 'custom-styles.css' %}">
+</head>
+
+<body>
+
+    <!-- Customized Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{% url 'index' %}">Wallpaper Store</a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'index' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'admin_view' %}">Edit</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <!-- Iterate through categories and create dropdown items -->
+                        {% for category in categories %}
+                            <a class="dropdown-item" href="{% url 'category_wallpapers' category.id %}">{{ category.name }}</a>
+                        {% endfor %}
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Favorites</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'add_wallpaper' %}">Add Wallpaper</a>
+                </li>
+                 
+        {% if user.is_authenticated %}
+        <!-- Display user's name and logout link -->
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'ulogout' %}">Logout ({{ user.username }})</a>
+        </li>
+    {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'register' %}">Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'ulogout' %}">Logout</a>
+                </li>
+                {% endif %}
+            </ul>
+            
+            <!-- Search form -->
+            <form class="form-inline my-2 my-lg-0" action="{% url 'index' %}" method="get">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="q" value="{{ query }}">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            {% for wallpaper in wallpapers %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ wallpaper.w_image.url }}" class="card-img-top" alt="Wallpaper Image" style="height: 200px; object-fit: cover;">
+
+                    <div class="card-body">
+                        <h5 class="card-title">{{ wallpaper.title }}</h5>
+                        <p class="card-text">Resolution: {{ wallpaper.resolution_width }}x{{ wallpaper.resolution_height }}</p>
+                        <p class="card-text">File Size: {{ wallpaper.file_size }} MB</p>
+                        <p class="card-text">Uploaded by: {{ wallpaper.uploaded_by.username }}</p>
+                        <p class="card-text">Uploaded at: {{ wallpaper.uploaded_at|date:"F d, Y H:i" }}</p>
+                        <p class="card-text">Categories: {% for category in wallpaper.categories.all %}{{ category.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                        <a href="{{ wallpaper.image.url }}" class="btn btn-primary" download>Download</a>
+                        <form method="post" action="{% url 'add_to_favorites' wallpaper.id %}">
+                            
+                            {% csrf_token %}
+                            <button class="btn btn-outline-danger favorite-btn" data-wallpaper-id="{{ wallpaper.id }}">
+                                {% if request.user in wallpaper.favorites.all %}
+                                    <i class="bi bi-heart-fill"></i> Remove from Favorites
+                                {% else %}
+                                    <i class="bi bi-heart"></i> Add to Favorites
+                                {% endif %}
+                            </button>
+                        </form>
+                        
+                        <span class="favorite-count">{{ wallpaper.favorites.count }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- At the end of your HTML file -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.favorite-btn').on('click', function () {
+            var wallpaperId = $(this).data('wallpaper-id');
+            var url = '/add_to_favorites/' + wallpaperId + '/';
+            
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: {},
+                success: function (data) {
+                    if (data.added) {
+                        $(this).html('<i class="bi bi-heart-fill"></i> Remove from Favorites');
+                    } else {
+                        $(this).html('<i class="bi bi-heart"></i> Add to Favorites');
+                    }
+                    $('.favorite-count').html(data.count);
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+
+</html>

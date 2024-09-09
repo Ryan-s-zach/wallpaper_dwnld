@@ -1,0 +1,28 @@
+<!-- category_wallpapers.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h2>{{ category.name }} Wallpapers</h2>
+        <div class="row">
+            {% for wallpaper in wallpapers %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ wallpaper.w_image.url }}" class="card-img-top" alt="Wallpaper Image" style="height: 200px; object-fit: cover;">
+
+                    <div class="card-body">
+                        <h5 class="card-title">{{ wallpaper.title }}</h5>
+                        <p class="card-text">Resolution: {{ wallpaper.resolution_width }}x{{ wallpaper.resolution_height }}</p>
+                        <p class="card-text">File Size: {{ wallpaper.file_size }} MB</p>
+                        <p class="card-text">Uploaded by: {{ wallpaper.uploaded_by.username }}</p>
+                        <p class="card-text">Uploaded at: {{ wallpaper.uploaded_at|date:"F d, Y H:i" }}</p>
+                        <p class="card-text">Categories: {% for category in wallpaper.categories.all %}{{ category.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                        <a href="{{ wallpaper.image.url }}" class="btn btn-primary" download>Download</a>
+                        <button class="btn btn-outline-danger favorite-btn"><i class="bi bi-heart"></i> Add to Favorites</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}

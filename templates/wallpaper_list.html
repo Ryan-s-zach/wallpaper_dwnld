@@ -1,0 +1,18 @@
+<!-- templates/wallpapers/wallpaper_list.html -->
+
+
+
+{% block content %}
+    <h2>Wallpapers</h2>
+    {% for wallpaper in wallpapers %}
+        <div>
+            <img src="{{ wallpaper.w_image.url }}" alt="{{ wallpaper.title }}" style="max-width: 300px; max-height: 300px;">
+            <h3>{{ wallpaper.title }}</h3>
+            <p>Resolution: {{ wallpaper.resolution_width }}x{{ wallpaper.resolution_height }}</p>
+            <p>File Size: {{ wallpaper.file_size }} MB</p>
+            <p>Uploaded by: {{ wallpaper.uploaded_by.username }}</p>
+            <p>Uploaded at: {{ wallpaper.uploaded_at }}</p>
+        </div>
+        <hr>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Display the image in a larger format -->
+                <img src="{{ wallpaper.w_image.url }}" class="img-fluid" alt="Wallpaper Image" style="width: 100%; max-height: 600px;">
+            </div>
+            <div class="col-md-6 mt-4">
+                <h2>{{ wallpaper.title }}</h2>
+                <p>Resolution: {{ wallpaper.resolution_width }}x{{ wallpaper.resolution_height }}</p>
+                <p>File Size: {{ wallpaper.file_size }} MB</p>
+                <p>Uploaded by: {{ wallpaper.uploaded_by.username }}</p>
+                <p>Uploaded at: {{ wallpaper.uploaded_at|date:"F d, Y H:i" }}</p>
+                <p>Categories: {% for category in wallpaper.categories.all %}{{ category.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                
+                <!-- Edit and remove buttons for the user who uploaded the wallpaper -->
+                {% if request.user == wallpaper.uploaded_by %}
+                <a href="{% url 'edit_wallpaper' wallpaper.id %}" class="btn btn-primary">Edit Wallpaper</a>
+                <form method="post" action="{% url 'delete_wallpaper' wallpaper.id %}" class="mt-3">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Remove Wallpaper</button>
+                    </form>
+                {% endif %}
+                
+                <!-- Add other details as needed -->
+            </div>
+        </div>
+    </div>
+{% endblock %}

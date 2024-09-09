@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Login{% endblock title %}
+
+{% block content %}
+<div class="container-fluid" style="background: url('{% static 'images/background.jpg' %}') no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover; height: 100vh;">
+
+<div class="row">
+        <div class="col-12">
+            <h1 class="text-center text-white mt-5">Welcome to Wallpaper Store</h1>
+            <hr class="bg-white">
+        </div>
+    </div>
+    <section class="py-4 my-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <form method="post" action="" class="mx-auto bg-light p-4 rounded" style="width: 80%;">
+                        {% csrf_token %}
+                        <h2 class="mb-4 text-center">Login</h2>
+                        {% if error_message %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ error_message }}
+                            </div>
+                        {% endif %}
+                        <div class="mb-4">
+                            <label for="username" class="form-label">Username:</label>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username">
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password:</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Login</button>
+                        <p class="text-center mt-3 text-black">Don't have an account? <a href="{% url 'register' %}" class="text-warning">Register</a></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    body {
+        overflow: hidden; /* Hide scrollbar */
+    }
+</style>
+
+{% endblock content %}
